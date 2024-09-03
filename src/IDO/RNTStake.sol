@@ -1,9 +1,11 @@
 pragma solidity ^0.8.2;
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 contract RNTStake{
     IERC20 public immutable RNT;
 
-    uint256 public constant mintSeedPersecond = 1 * 1e18 / 1 days;  // 
+    uint256 public constant mintSeedPersecond = 1e18;  // 
 
     constructor(IERC20 _RNT){
         RNT = _RNT;
@@ -21,17 +23,18 @@ contract RNTStake{
         require(RNT.transferFrom(msg.sender, address(this), amount), "transfer failed");
 
         stakes[msg.sender].amount += amount;
+        stakes[msg.sender].lastUpdate = block.timestamp;
     }
 
     function unstake(uint256 amount) external before{
-        Stake storage stake = stakes[msg.sender];
+        Stake storage s = stakes[msg.sender];
         require(s.amount >= amount, "amount exceeds balance");
 
         s.amount -= amount;
         require(RNT.transfer(msg.sender, amount), "transfer failed");
     }
 
-    modifier before() internal {
+    modifier before() {
         _;
         Stake storage s = stakes[msg.sender];
         if (s.amount == 0) return;

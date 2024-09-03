@@ -1,5 +1,7 @@
 pragma solidity ^0.8.2;
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 contract RNTIDO{
     event PreSale(address indexed user, uint256 amount);
     event Claim(address indexed user, uint256 amount);
@@ -60,7 +62,7 @@ contract RNTIDO{
 
         preSaleAmount[msg.sender] = 0;
         uint256 refundAmount = amount * PRICE;
-        (bool ok) = msg.sender.call{value: refundAmount}("");
+        (bool ok,) = msg.sender.call{value: refundAmount}("");
         require(ok, "refund failed");
     }
 
@@ -69,7 +71,7 @@ contract RNTIDO{
         require(block.timestamp >= END_TIME, "presale not ended");
         require(totalRaised >= SOFTCAP, "softcap reached");
 
-        (bool ok) = msg.sender.call{value: totalRaised}("");
+        (bool ok,) = msg.sender.call{value: totalRaised}("");
         require(ok, "refund failed");
     }
 
