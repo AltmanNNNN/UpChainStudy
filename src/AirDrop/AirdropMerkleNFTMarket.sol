@@ -5,6 +5,7 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract AirdropMerkleNFTMarket{
     event Claim(address indexed user, uint256 tokenId);
+    event PrePay(address indexed user, uint256 amount);
     
     IERC20 public immutable token;
     IERC721 public immutable nft;
@@ -18,6 +19,7 @@ contract AirdropMerkleNFTMarket{
 
     function permitPrePay(uint256 amount, address approved,  uint8 v, bytes32 r, bytes32 s) external{
         token.permit(msg.sender, address(this), amount, v, r, s);
+        emit PrePay(msg.sender, amount);
     }
 
     function claimNFT(uint256 amount, bytes32[] calldata proof) external{
